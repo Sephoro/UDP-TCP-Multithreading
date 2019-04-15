@@ -16,35 +16,30 @@ class myThread (threading.Thread):
         UDPServer(self.name)
         print("Exiting " + self.name)
 
-""" def print_time(threadName, counter, delay):
-    while counter:
-        if exitFlag:
-            threadName.exit()
-        time.sleep(delay)
-        #os.system('clear')
-        print("%s: %s %d" % (threadName, time.ctime(time.time()),counter))
-        print(threading.active_count()) #,threading.current_thread())
-        counter -= 1
- """
+
+serverPort = 12050
+serverSocket = socket(AF_INET, SOCK_DGRAM)
+serverSocket.bind(('',serverPort))
+print("The sever is ready to receive on thread : " + threadName + "\n\n\n")
+
+
+
+
 
 #The UDP server
 
 def UDPServer(threadName):
 
-    serverPort = 12050
-    serverSocket = socket(AF_INET, SOCK_DGRAM)
-
-    serverSocket.bind(('',serverPort))
-
-
-    print("The sever is ready to receive on thread : " + threadName + "\n\n\n")
-
     while True:
+        message,clientAddress = serverSocket.recvfrom(2048)
+        print(message.decode())
+        modifiedMessage = message.decode().upper()
+        serverSocket.sendto(modifiedMessage.encode(), clientAddress)
 
-       message,clientAddress = serverSocket.recvfrom(2048)
-       print(message.decode())
-       modifiedMessage = message.decode().upper()
-       serverSocket.sendto(modifiedMessage.encode(), clientAddress)
+    
+
+    
+  
 
 #Create Threads
 

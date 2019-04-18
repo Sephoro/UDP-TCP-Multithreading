@@ -6,56 +6,50 @@ import os
 exitFlag = 0
 
 class myThread (threading.Thread):
-    def __init__(self, threadID, name):
+    def __init__(self, threadID, name, message, Address):
         threading.Thread.__init__(self)
         self.threadID = threadID
         self.name = name
+        self.message = message
+        self.serverAddress = Address
     def run(self):
         print("Starting " + self.name)
         print(self)
-        UDPServer(self.name)
+        messaging(self.name, self.message, self.serverAddress)
         print("Exiting " + self.name)
 
 
-serverPort = 12050
+#Setup
+
+serverPort = 12055
 serverSocket = socket(AF_INET, SOCK_DGRAM)
 serverSocket.bind(('',serverPort))
-print("The sever is ready to receive on thread : " + threadName + "\n\n\n")
 
 
+#For threads
+
+def messaging(threadName, message, clientAddress):
+    print(threadName + " in Action: \n")
+    print(message.decode())
+    modifiedMessage = message.decode().upper()
+    serverSocket.sendto(modifiedMessage.encode(), clientAddress)
 
 
-
-#The UDP server
-
-def UDPServer(threadName):
-
-    while True:
-        message,clientAddress = serverSocket.recvfrom(2048)
-        print(message.decode())
-        modifiedMessage = message.decode().upper()
-        serverSocket.sendto(modifiedMessage.encode(), clientAddress)
-
-    
-
-    
-  
-
-#Create Threads
 
 threads = []
+count = 0 #House keeping
 
-for i in range(1,3):
-    
-    thread = myThread(i,"Thread-" + str(i))
-    threads.append(thread)
+#Wait for contact
 
-#Start the threads
+print("The sever is ready to receive using threads \n\n")
 
-for i in range(0,2):
+while True:
+    count = count + 1
+    message,clientAddress = serverSocket.recvfrom(2048)
+    thread_ = myThread(count, "Thread-"+str(count), message, clientAddress)
+    thread_.start()
+    threads.append(thread_)
 
-    threads[i].start()
-    #print( threads[i].getName(), "\n\n")
-
-
-print("Exiting Main Thread")
+#Join threads for conclusion
+for t in threads:
+    t.join()       

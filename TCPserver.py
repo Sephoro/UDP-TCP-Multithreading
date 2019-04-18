@@ -1,59 +1,57 @@
 from socket import *
 import threading
-import time
 
 exitFlag = 0
 
-class myThread (threading.Thread):
-    def __init__(self, threadID, name):
+class serverThreads  (threading.Thread):
+    def __init__(self, threadID, name, connectionSocket, senderAddress):
         threading.Thread.__init__(self)
         self.threadID = threadID
         self.name = name
+        self.connectionSocket = connectionSocket
+        self.senderAddress = senderAddress
+
     def run(self):
         print("Starting " + self.name)
-        print(self)
-        TCPServer(self.name)
+        self.TCPpipeline()
         print("Exiting " + self.name)
+        
+    def TCPpipeline(self):
+        while True:
+            message = self.connectionSocket.recv(1024).decode()
+            if message == 'close' or '': break
+            if message != '':
+                print('\nMessage-->' + self.name + ':\n\"' + message + '\"\nSender: \n' + str(self.senderAddress))
+                
+            modMessage = message.upper()
+            connectionSocket.send(modMessage.encode())
+	
 
-
-serverPort = 12550
+#Setup 
+serverPort = 20040
 serverSocket = socket(AF_INET, SOCK_STREAM)
 serverSocket.bind(('',serverPort))
-
+   
 threads = []
+count = 0 #House keeping
 
-def TCPServer(threadName):
-    while True:
-            
-        message = connectionSocket.recv(1024).decode()
-    
-        if message == 'close' or '': break
-        
-        if message != '':
-            print('\nMessage-->' + threadName + ':\n\"' + message + '\"\nSender: \n' + str(addr))
-
-        modMessage = message.upper()
-        connectionSocket.send(modMessage.encode())
-        #connectionSocket.close()
-
-count = 0
-
+#Wait for contact
 
 while True:
     
     count = count + 1
 
     serverSocket.listen(5)
-    print('The server is ready to recieve on multiple thread: ')
+    print('The server is ready to recieve on multiple threads: ')
     connectionSocket, addr = serverSocket.accept()
-    thread_ = myThread(count, "Thread-" + str(count))
+    thread_ = serverThreads(count, "Thread-" + str(count),connectionSocket, addr)
     thread_.start()    
     threads.append(thread_)
 
-    connectionSocket.close()
+    #connectionSocket.close()
     
-
-#Create Threads
-
+#Join threads in conclusion
 for thread_ in threads:
     thread_.join()
+
+connectionSocket.close()

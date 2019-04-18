@@ -1,8 +1,8 @@
 
 from socket import *
-serverName ='localhost' # "10.196.51.24" #IP adress / server website adress Mine: 10.30.44.14 #10.196.6.16
-serverPort = 12050
-# using clientSocket as cs
+serverName ='localhost' #"10.196.51.24" #IP adress / server website adress Mine: 10.30.44.14 #10.196.6.16
+serverPort = 12055
+
 
 clientSocket = socket(AF_INET,SOCK_DGRAM) #creates client socket
 

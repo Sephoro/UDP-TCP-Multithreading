@@ -1,7 +1,7 @@
 from socket import *
 
-serverName =  'localhost' # '10.30.47.130'    # "10.196.6.147" #My IP adress #10.30.44.57 i
-serverPort = 12550
+serverName =  'localhost' # '10.30.47.130'    #"10.196.6.147" #My IP adress #10.30.44.57 i
+serverPort = 20040
 
 clientSocket = socket(AF_INET, SOCK_STREAM)
 clientSocket.connect((serverName, serverPort))
